@@ -1,0 +1,103 @@
+<%# app/views/devise/registrations/edit.html.erb — Page de modification des identifiants %>
+<%# Gère la modification de l'email et du mot de passe (géré par Devise) %>
+<%# Pour le prénom, nom et description → voir users#edit %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body p-4">
+
+          <%# Titre de la page %>
+          <h2 class="card-title text-center fw-bold mb-4">🔑 Modifier mes identifiants</h2>
+
+          <%# Note informative : distinction avec le formulaire de profil %>
+          <div class="alert alert-info small">
+            💡 Pour modifier votre prénom, nom ou description,
+            <%= link_to "accédez à votre profil", user_path(current_user) %>.
+          </div>
+
+          <%# Formulaire Devise pour la modification du compte (account_update) %>
+          <%= form_for(resource, as: resource_name,
+                       url: registration_path(resource_name),
+                       html: { method: :put }) do |f| %>
+
+            <%# Affichage des erreurs Devise (email invalide, mot de passe trop court...) %>
+            <%= devise_error_messages! %>
+
+            <%# ===== CHAMP EMAIL ===== %>
+            <div class="mb-3">
+              <%= f.label :email, "Adresse email", class: "form-label fw-bold" %>
+              <%# value: resource.email prérempli avec l'email actuel de l'utilisateur %>
+              <%= f.email_field :email,
+                  autocomplete: "email",
+                  class: "form-control",
+                  value: resource.email %>
+            </div>
+
+            <%# ===== CHAMP NOUVEAU MOT DE PASSE (optionnel) ===== %>
+            <div class="mb-3">
+              <%= f.label :password, "Nouveau mot de passe", class: "form-label fw-bold" %>
+              <em class="text-muted small">(laissez vide pour ne pas le changer)</em>
+
+              <%= f.password_field :password,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Nouveau mot de passe (optionnel)" %>
+
+              <%# Indication de la longueur minimale du mot de passe %>
+              <% if @minimum_password_length %>
+                <div class="form-text"><%= @minimum_password_length %> caractères minimum.</div>
+              <% end %>
+            </div>
+
+            <%# ===== CHAMP CONFIRMATION DU NOUVEAU MOT DE PASSE ===== %>
+            <div class="mb-3">
+              <%= f.label :password_confirmation, "Confirmer le nouveau mot de passe",
+                  class: "form-label fw-bold" %>
+              <%= f.password_field :password_confirmation,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Confirmer le nouveau mot de passe" %>
+            </div>
+
+            <%# ===== CHAMP MOT DE PASSE ACTUEL (obligatoire par Devise pour valider les changements) ===== %>
+            <div class="mb-4">
+              <%= f.label :current_password, "Mot de passe actuel", class: "form-label fw-bold" %>
+              <em class="text-muted small">(requis pour valider les modifications)</em>
+
+              <%# autocomplete: "current-password" aide les gestionnaires de mots de passe %>
+              <%= f.password_field :current_password,
+                  autocomplete: "current-password",
+                  class: "form-control",
+                  placeholder: "Votre mot de passe actuel" %>
+            </div>
+
+            <%# Bouton de mise à jour %>
+            <div class="d-grid">
+              <%= f.submit "Mettre à jour", class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <%# Bouton de suppression de compte (optionnel mais fourni par Devise) %>
+          <div class="mt-4 text-center border-top pt-3">
+            <p class="text-muted small mb-2">Zone dangereuse</p>
+            <%# data-confirm affiche une boîte de dialogue de confirmation avant suppression %>
+            <%= button_to "Supprimer mon compte", registration_path(resource_name),
+                data: { confirm: "Êtes-vous sûr ? Cette action est irréversible !" },
+                method: :delete,
+                class: "btn btn-outline-danger btn-sm" %>
+          </div>
+
+          <%# Lien retour vers le profil %>
+          <div class="mt-3 text-center">
+            <%= link_to "← Retour au profil", user_path(current_user), class: "text-muted small" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

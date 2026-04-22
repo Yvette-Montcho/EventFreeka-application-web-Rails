@@ -1,0 +1,96 @@
+<%# app/views/devise/registrations/new.html.erb — Page d'inscription (sign up) %>
+<%# Formulaire complet d'inscription avec les champs personnalisés (prénom, nom) %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body p-4">
+
+          <%# Titre de la page d'inscription %>
+          <h2 class="card-title text-center fw-bold mb-4">🚀 Créer un compte</h2>
+
+          <%# form_for avec les helpers Devise : resource, resource_name, registration_path %>
+          <%= form_for(resource, as: resource_name,
+                       url: registration_path(resource_name),
+                       html: { class: "mt-3" }) do |f| %>
+
+            <%# Affiche les erreurs de validation de Devise (email déjà pris, mdp trop court...) %>
+            <%# devise_error_messages! est un helper Devise qui affiche les erreurs formatées %>
+            <%= devise_error_messages! %>
+
+            <%# ===== RANGÉE : PRÉNOM ET NOM ===== %>
+            <div class="row mb-3">
+
+              <%# Champ prénom (paramètre personnalisé autorisé dans ApplicationController) %>
+              <div class="col-md-6">
+                <%= f.label :first_name, "Prénom", class: "form-label fw-bold" %>
+                <%= f.text_field :first_name,
+                    autofocus: true,
+                    class: "form-control",
+                    placeholder: "Jean" %>
+              </div>
+
+              <%# Champ nom de famille (paramètre personnalisé autorisé dans ApplicationController) %>
+              <div class="col-md-6">
+                <%= f.label :last_name, "Nom", class: "form-label fw-bold" %>
+                <%= f.text_field :last_name,
+                    class: "form-control",
+                    placeholder: "Dupont" %>
+              </div>
+            </div>
+
+            <%# ===== CHAMP EMAIL ===== %>
+            <div class="mb-3">
+              <%= f.label :email, "Adresse email", class: "form-label fw-bold" %>
+              <%= f.email_field :email,
+                  autocomplete: "email",
+                  class: "form-control",
+                  placeholder: "votre@email.com" %>
+            </div>
+
+            <%# ===== CHAMP MOT DE PASSE ===== %>
+            <div class="mb-3">
+              <%= f.label :password, class: "form-label fw-bold" %>
+
+              <%# Affiche la longueur minimale du mot de passe si configurée dans Devise %>
+              <% if @minimum_password_length %>
+                <em class="text-muted small">
+                  (<%= @minimum_password_length %> caractères minimum)
+                </em>
+              <% end %>
+
+              <%= f.password_field :password,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Minimum 8 caractères" %>
+            </div>
+
+            <%# ===== CHAMP CONFIRMATION DU MOT DE PASSE ===== %>
+            <div class="mb-4">
+              <%= f.label :password_confirmation, "Confirmer le mot de passe",
+                  class: "form-label fw-bold" %>
+              <%= f.password_field :password_confirmation,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Répétez votre mot de passe" %>
+            </div>
+
+            <%# ===== BOUTON D'INSCRIPTION ===== %>
+            <div class="d-grid">
+              <%= f.submit "Créer mon compte", class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <%# Liens additionnels : connexion, mot de passe oublié %>
+          <div class="mt-3 text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

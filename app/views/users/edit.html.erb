@@ -1,0 +1,90 @@
+<%# app/views/users/edit.html.erb — Formulaire de modification des informations du profil %>
+<%# Permet de modifier : prénom, nom, description (PAS l'email ni le mot de passe — géré par Devise) %>
+
+<%# Titre de la page %>
+<h1 class="fw-bold mb-4">✏️ Modifier mon profil</h1>
+
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+
+        <%# Note informative : distinguish ce formulaire de celui de Devise %>
+        <div class="alert alert-info mb-4">
+          💡 <strong>Note :</strong> Ce formulaire permet de modifier votre prénom, nom et description.
+          Pour changer votre email ou mot de passe,
+          <%= link_to "cliquez ici", edit_user_registration_path %>.
+        </div>
+
+        <%# form_with génère un formulaire PATCH vers /users/:id %>
+        <%= form_with model: @user, local: true do |f| %>
+
+          <%# Affichage des erreurs de validation si le formulaire est soumis avec des erreurs %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>⚠️ <%= pluralize(@user.errors.count, "erreur") %> trouvée(s) :</h5>
+              <ul class="mb-0">
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <%# Rangée prénom + nom côte à côte %>
+          <div class="row mb-3">
+
+            <%# Champ prénom %>
+            <div class="col-md-6">
+              <%= f.label :first_name, "Prénom", class: "form-label fw-bold" %>
+              <%= f.text_field :first_name,
+                  class: "form-control #{'is-invalid' if @user.errors[:first_name].any?}",
+                  autofocus: true %>
+              <% if @user.errors[:first_name].any? %>
+                <div class="invalid-feedback"><%= @user.errors[:first_name].first %></div>
+              <% end %>
+            </div>
+
+            <%# Champ nom de famille %>
+            <div class="col-md-6">
+              <%= f.label :last_name, "Nom de famille", class: "form-label fw-bold" %>
+              <%= f.text_field :last_name,
+                  class: "form-control #{'is-invalid' if @user.errors[:last_name].any?}" %>
+              <% if @user.errors[:last_name].any? %>
+                <div class="invalid-feedback"><%= @user.errors[:last_name].first %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# Champ description / biographie %>
+          <div class="mb-4">
+            <%= f.label :description, "Description / Biographie", class: "form-label fw-bold" %>
+
+            <%# Zone de texte multiligne pour la description %>
+            <%= f.text_area :description,
+                class: "form-control #{'is-invalid' if @user.errors[:description].any?}",
+                rows: 4,
+                placeholder: "Parlez-vous en quelques mots : vos passions, votre ville..." %>
+
+            <%# Texte d'aide pour indiquer la limite de caractères %>
+            <div class="form-text">Maximum 500 caractères.</div>
+
+            <% if @user.errors[:description].any? %>
+              <div class="invalid-feedback"><%= @user.errors[:description].first %></div>
+            <% end %>
+          </div>
+
+          <%# Boutons d'action %>
+          <div class="d-flex justify-content-between">
+            <%# Annuler : retour vers la page de profil sans sauvegarder %>
+            <%= link_to "Annuler", user_path(@user), class: "btn btn-outline-secondary" %>
+
+            <%# Bouton de sauvegarde %>
+            <%= f.submit "💾 Sauvegarder", class: "btn btn-primary px-4" %>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

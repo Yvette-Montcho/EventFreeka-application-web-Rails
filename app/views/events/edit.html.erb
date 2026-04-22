@@ -1,0 +1,110 @@
+<%# app/views/events/edit.html.erb — Formulaire de modification d'un événement existant %>
+
+<%# Titre de la page avec le nom de l'événement à modifier %>
+<h1 class="fw-bold mb-4">✏️ Modifier : <%= @event.title %></h1>
+
+<%# Réutilise le même partial de formulaire que la création (DRY - Don't Repeat Yourself) %>
+<%# render partial évite de dupliquer le code du formulaire entre new et edit %>
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+
+        <%# form_with détecte automatiquement si @event est nouveau ou existant %>
+        <%# Pour un objet existant, il génère un PATCH vers /events/:id %>
+        <%= form_with model: @event, local: true do |f| %>
+
+          <%# Affichage groupé des erreurs de validation %>
+          <% if @event.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>⚠️ <%= pluralize(@event.errors.count, "erreur") %> trouvée(s) :</h5>
+              <ul class="mb-0">
+                <% @event.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <%# Champ titre — prérempli avec la valeur actuelle de l'événement %>
+          <div class="mb-3">
+            <%= f.label :title, "Titre de l'événement", class: "form-label fw-bold" %>
+            <%= f.text_field :title,
+                class: "form-control #{'is-invalid' if @event.errors[:title].any?}",
+                placeholder: "Ex: Concert de Jazz au Parc" %>
+            <% if @event.errors[:title].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:title].first %></div>
+            <% end %>
+          </div>
+
+          <%# Champ description — prérempli avec le contenu actuel %>
+          <div class="mb-3">
+            <%= f.label :description, "Description", class: "form-label fw-bold" %>
+            <%= f.text_area :description,
+                class: "form-control #{'is-invalid' if @event.errors[:description].any?}",
+                rows: 5 %>
+            <% if @event.errors[:description].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:description].first %></div>
+            <% end %>
+          </div>
+
+          <%# Rangée date + durée côte à côte %>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <%= f.label :start_date, "Date et heure de début", class: "form-label fw-bold" %>
+              <%= f.datetime_local_field :start_date,
+                  class: "form-control #{'is-invalid' if @event.errors[:start_date].any?}" %>
+              <% if @event.errors[:start_date].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:start_date].first %></div>
+              <% end %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :duration, "Durée (en heures)", class: "form-label fw-bold" %>
+              <%= f.number_field :duration,
+                  class: "form-control #{'is-invalid' if @event.errors[:duration].any?}",
+                  min: 0.5, step: 0.5 %>
+              <% if @event.errors[:duration].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:duration].first %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# Champ lieu %>
+          <div class="mb-3">
+            <%= f.label :location, "Lieu", class: "form-label fw-bold" %>
+            <%= f.text_field :location,
+                class: "form-control #{'is-invalid' if @event.errors[:location].any?}" %>
+            <% if @event.errors[:location].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:location].first %></div>
+            <% end %>
+          </div>
+
+          <%# Champ prix avec symbole € %>
+          <div class="mb-4">
+            <%= f.label :price, "Prix (en euros, 0 = gratuit)", class: "form-label fw-bold" %>
+            <div class="input-group">
+              <span class="input-group-text">€</span>
+              <%= f.number_field :price,
+                  class: "form-control #{'is-invalid' if @event.errors[:price].any?}",
+                  min: 0, step: 0.01 %>
+              <% if @event.errors[:price].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:price].first %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# Boutons d'action : annuler ou sauvegarder les modifications %>
+          <div class="d-flex justify-content-between">
+            <%# Annuler redirige vers la page de détail de l'événement en cours %>
+            <%= link_to "Annuler", event_path(@event), class: "btn btn-outline-secondary" %>
+
+            <%# Bouton de sauvegarde des modifications %>
+            <%= f.submit "💾 Sauvegarder les modifications", class: "btn btn-primary px-4" %>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

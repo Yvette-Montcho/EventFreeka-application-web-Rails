@@ -1,0 +1,70 @@
+<%# app/views/devise/sessions/new.html.erb — Page de connexion (login) %>
+<%# Générée par Devise puis customisée avec Bootstrap 5 %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <%# Carte Bootstrap centrée sur la page %>
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body p-4">
+
+          <%# Titre de la page de connexion %>
+          <h2 class="card-title text-center fw-bold mb-4">🔐 Se connecter</h2>
+
+          <%# form_for est utilisé par Devise pour ses formulaires (convention Devise) %>
+          <%# resource => l'objet User, resource_name => :user, url => session_path %>
+          <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+
+            <%# ===== CHAMP EMAIL ===== %>
+            <div class="mb-3">
+              <%= f.label :email, "Adresse email", class: "form-label fw-bold" %>
+
+              <%# Champ email avec autofocus et autocomplete pour la commodité %>
+              <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  class: "form-control",
+                  placeholder: "votre@email.com" %>
+            </div>
+
+            <%# ===== CHAMP MOT DE PASSE ===== %>
+            <div class="mb-3">
+              <%= f.label :password, "Mot de passe", class: "form-label fw-bold" %>
+
+              <%# Champ mot de passe masqué avec autocomplete pour la sécurité %>
+              <%= f.password_field :password,
+                  autocomplete: "current-password",
+                  class: "form-control",
+                  placeholder: "Votre mot de passe" %>
+            </div>
+
+            <%# ===== CASE "SE SOUVENIR DE MOI" ===== %>
+            <%# Devise::Rememberable ajoute cette option si le module est activé dans le modèle %>
+            <% if devise_mapping.rememberable? %>
+              <div class="mb-3 form-check">
+                <%# Checkbox pour activer le cookie "remember me" (session persistante) %>
+                <%= f.check_box :remember_me, class: "form-check-input" %>
+                <%= f.label :remember_me, "Se souvenir de moi", class: "form-check-label" %>
+              </div>
+            <% end %>
+
+            <%# ===== BOUTON DE CONNEXION ===== %>
+            <div class="d-grid mt-4">
+              <%# submit génère un bouton <input type="submit"> avec le texte spécifié %>
+              <%= f.submit "Se connecter", class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <%# ===== LIENS ADDITIONNELS (Devise shared links) ===== %>
+          <%# Affiche les liens : inscription, mot de passe oublié, etc. %>
+          <div class="mt-3 text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

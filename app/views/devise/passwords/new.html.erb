@@ -1,0 +1,57 @@
+<%# app/views/devise/passwords/new.html.erb — Page "Mot de passe oublié" %>
+<%# L'utilisateur entre son email pour recevoir un lien de réinitialisation de mot de passe %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body p-4">
+
+          <%# Titre de la page %>
+          <h2 class="card-title text-center fw-bold mb-2">🔒 Mot de passe oublié ?</h2>
+
+          <%# Explication courte du processus de réinitialisation %>
+          <p class="text-center text-muted mb-4">
+            Entrez votre adresse email, nous vous enverrons
+            les instructions pour réinitialiser votre mot de passe.
+          </p>
+
+          <%# Formulaire Devise de demande de réinitialisation du mot de passe %>
+          <%# url: password_path(resource_name) => POST vers /users/password %>
+          <%= form_for(resource, as: resource_name,
+                       url: password_path(resource_name),
+                       html: { method: :post }) do |f| %>
+
+            <%# Affichage des erreurs (email non trouvé, email invalide...) %>
+            <%= devise_error_messages! %>
+
+            <%# ===== CHAMP EMAIL ===== %>
+            <div class="mb-4">
+              <%= f.label :email, "Adresse email", class: "form-label fw-bold" %>
+
+              <%# Champ email avec autofocus pour une saisie immédiate %>
+              <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  class: "form-control",
+                  placeholder: "votre@email.com" %>
+            </div>
+
+            <%# Bouton d'envoi des instructions par email %>
+            <div class="d-grid">
+              <%= f.submit "Envoyer les instructions", class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <%# Liens Devise : retour connexion, inscription %>
+          <div class="mt-3 text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

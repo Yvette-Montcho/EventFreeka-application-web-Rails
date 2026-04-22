@@ -1,0 +1,73 @@
+<%# app/views/devise/passwords/edit.html.erb — Formulaire de changement de mot de passe %>
+<%# Accessible via le lien dans l'email de réinitialisation (contient un token sécurisé) %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body p-4">
+
+          <%# Titre de la page %>
+          <h2 class="card-title text-center fw-bold mb-4">🔑 Changer mon mot de passe</h2>
+
+          <%# form_for avec la méthode PUT pour mettre à jour le mot de passe via Devise %>
+          <%= form_for(resource, as: resource_name,
+                       url: password_path(resource_name),
+                       html: { method: :put }) do |f| %>
+
+            <%# Affichage des erreurs (token expiré, mot de passe trop court...) %>
+            <%= devise_error_messages! %>
+
+            <%# Champ caché contenant le token de réinitialisation (extrait de l'URL de l'email) %>
+            <%# Ce token est généré par Devise et est unique et à usage unique %>
+            <%= f.hidden_field :reset_password_token %>
+
+            <%# ===== CHAMP NOUVEAU MOT DE PASSE ===== %>
+            <div class="mb-3">
+              <%= f.label :password, "Nouveau mot de passe", class: "form-label fw-bold" %>
+
+              <%# Indication de la longueur minimale configurée dans Devise %>
+              <% if @minimum_password_length %>
+                <em class="text-muted small">
+                  (<%= @minimum_password_length %> caractères minimum)
+                </em>
+              <% end %>
+
+              <%# autofocus : place le curseur automatiquement dans ce champ à l'ouverture %>
+              <%= f.password_field :password,
+                  autofocus: true,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Nouveau mot de passe sécurisé" %>
+            </div>
+
+            <%# ===== CHAMP CONFIRMATION DU NOUVEAU MOT DE PASSE ===== %>
+            <div class="mb-4">
+              <%= f.label :password_confirmation, "Confirmer le nouveau mot de passe",
+                  class: "form-label fw-bold" %>
+
+              <%# autocomplete: "new-password" indique au navigateur le type de données attendu %>
+              <%= f.password_field :password_confirmation,
+                  autocomplete: "new-password",
+                  class: "form-control",
+                  placeholder: "Répétez votre nouveau mot de passe" %>
+            </div>
+
+            <%# Bouton de confirmation du changement de mot de passe %>
+            <div class="d-grid">
+              <%= f.submit "Changer mon mot de passe", class: "btn btn-primary btn-lg" %>
+            </div>
+
+          <% end %>
+
+          <%# Liens additionnels : connexion, inscription %>
+          <div class="mt-3 text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

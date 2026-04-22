@@ -1,0 +1,157 @@
+<%# app/views/events/show.html.erb — Page de détail d'un événement spécifique %>
+
+<%# Fil d'Ariane (breadcrumb) pour la navigation %>
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <%# Lien retour vers la liste des événements %>
+    <li class="breadcrumb-item">
+      <%= link_to "Accueil", root_path %>
+    </li>
+    <%# Élément actif : nom de l'événement affiché (non cliquable) %>
+    <li class="breadcrumb-item active" aria-current="page">
+      <%= @event.title %>
+    </li>
+  </ol>
+</nav>
+
+<%# ===== EN-TÊTE DE L'ÉVÉNEMENT ===== %>
+<div class="row mb-4">
+  <div class="col-md-8">
+    <%# Titre principal de l'événement %>
+    <h1 class="display-5 fw-bold"><%= @event.title %></h1>
+
+    <%# Badge de statut : événement passé ou à venir %>
+    <% if @event.past? %>
+      <span class="badge bg-secondary fs-6">Événement passé</span>
+    <% else %>
+      <span class="badge bg-success fs-6">À venir</span>
+    <% end %>
+
+    <%# Badge du prix de l'événement %>
+    <% if @event.free? %>
+      <span class="badge bg-success fs-6 ms-2">Gratuit</span>
+    <% else %>
+      <span class="badge bg-warning text-dark fs-6 ms-2">
+        <%= number_to_currency(@event.price, unit: "€", format: "%n %u") %>
+      </span>
+    <% end %>
+  </div>
+
+  <%# Boutons d'action pour le créateur de l'événement (admin) %>
+  <% if user_signed_in? && current_user == @event.admin %>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+      <%# Lien vers le formulaire de modification de l'événement %>
+      <%= link_to "✏️ Modifier", edit_event_path(@event), class: "btn btn-outline-secondary me-2" %>
+
+      <%# Lien de suppression avec confirmation avant exécution %>
+      <%= link_to "🗑️ Supprimer", event_path(@event),
+          data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet événement ?" },
+          class: "btn btn-outline-danger" %>
+    </div>
+  <% end %>
+</div>
+
+<%# ===== CONTENU PRINCIPAL : deux colonnes %>
+<div class="row">
+
+  <%# Colonne gauche : informations détaillées de l'événement %>
+  <div class="col-md-8">
+
+    <%# Description complète de l'événement %>
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h4 class="card-title">📝 Description</h4>
+        <%# simple_format préserve les sauts de ligne dans la description %>
+        <%= simple_format(@event.description) %>
+      </div>
+    </div>
+
+    <%# Section participants %>
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h4 class="card-title">
+          👥 Participants
+          <%# Badge affichant le nombre de participants inscrits %>
+          <span class="badge bg-primary ms-2"><%= @event.participants_count %></span>
+        </h4>
+
+        <%# Bouton pour s'inscrire — sera implémenté demain (event_registrations) %>
+        <% if user_signed_in? %>
+          <button class="btn btn-success mt-2" disabled>
+            Inscription (disponible prochainement)
+          </button>
+        <% else %>
+          <%# Invite les visiteurs à se connecter pour s'inscrire %>
+          <%= link_to "Se connecter pour s'inscrire", new_user_session_path,
+              class: "btn btn-outline-primary mt-2" %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+
+  <%# Colonne droite : informations pratiques de l'événement %>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">📋 Informations pratiques</h5>
+      </div>
+
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+
+          <%# Date de début de l'événement %>
+          <li class="list-group-item px-0">
+            <strong>📅 Début :</strong><br>
+            <%# Formatage complet de la date avec le jour, le mois et l'heure %>
+            <%= @event.start_date.strftime("%A %d %B %Y") %><br>
+            <span class="text-muted">à <%= @event.start_date.strftime("%H:%M") %></span>
+          </li>
+
+          <%# Date de fin calculée via la méthode end_date du modèle %>
+          <li class="list-group-item px-0">
+            <strong>🏁 Fin :</strong><br>
+            <%= @event.end_date.strftime("%A %d %B %Y") %><br>
+            <span class="text-muted">à <%= @event.end_date.strftime("%H:%M") %></span>
+          </li>
+
+          <%# Durée de l'événement %>
+          <li class="list-group-item px-0">
+            <strong>⏱ Durée :</strong> <%= @event.duration %> heure(s)
+          </li>
+
+          <%# Lieu de l'événement %>
+          <li class="list-group-item px-0">
+            <strong>📍 Lieu :</strong><br>
+            <%= @event.location %>
+          </li>
+
+          <%# Prix de l'événement %>
+          <li class="list-group-item px-0">
+            <strong>💰 Prix :</strong>
+            <% if @event.free? %>
+              <span class="text-success fw-bold">Gratuit</span>
+            <% else %>
+              <%= number_to_currency(@event.price, unit: "€", format: "%n %u") %>
+            <% end %>
+          </li>
+
+          <%# Créateur / organisateur de l'événement avec lien vers son profil %>
+          <li class="list-group-item px-0">
+            <strong>👤 Organisateur :</strong><br>
+            <%# Lien vers la page de profil de l'organisateur %>
+            <%= link_to @event.admin.full_name, user_path(@event.admin) %>
+            <br>
+            <small class="text-muted"><%= @event.admin.email %></small>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# Bouton retour vers la liste des événements %>
+<div class="mt-4">
+  <%= link_to "← Retour aux événements", root_path, class: "btn btn-outline-secondary" %>
+</div>

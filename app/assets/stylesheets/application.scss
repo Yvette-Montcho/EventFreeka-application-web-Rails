@@ -1,0 +1,130 @@
+// app/assets/stylesheets/application.scss — Feuille de styles principale de l'application
+// Ce fichier importe Bootstrap et ajoute les styles personnalisés d'EventFreeka
+
+// ===== IMPORT BOOTSTRAP =====
+// Importe Bootstrap 5 via la gem 'bootstrap' (déclarée dans le Gemfile)
+// @import doit être en premier pour que nos styles personnalisés puissent surcharger Bootstrap
+@import "bootstrap";
+
+// ===== VARIABLES PERSONNALISÉES =====
+// Couleurs principales de l'identité visuelle d'EventFreeka
+$eventfreeka-primary: #4f46e5;      // Violet-indigo : couleur principale de la marque
+$eventfreeka-secondary: #f59e0b;    // Ambre : couleur secondaire / accent
+$eventfreeka-success: #10b981;      // Vert : confirmations et éléments positifs
+$eventfreeka-dark: #1f2937;         // Gris foncé : textes et éléments de contraste
+
+// ===== STYLES GLOBAUX =====
+
+// Style de la balise body : police et couleur de fond générale
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; // Police moderne
+  background-color: #f8fafc;  // Fond très légèrement grisé pour le confort visuel
+  color: $eventfreeka-dark;   // Couleur de texte principale foncée
+  min-height: 100vh;          // La page occupe au minimum toute la hauteur de l'écran
+  display: flex;              // Flexbox pour placer le footer en bas de page
+  flex-direction: column;     // Disposition en colonne (navbar, contenu, footer)
+}
+
+// Le contenu principal prend tout l'espace disponible (fait "pousser" le footer vers le bas)
+main.container {
+  flex: 1;  // flex: 1 fait que l'élément prend tout l'espace restant entre navbar et footer
+}
+
+// ===== NAVBAR =====
+
+// Renforce le style de la navbar Bootstrap avec une ombre plus prononcée
+.navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);  // Ombre portée sous la navbar
+}
+
+// Style du logo de la navbar
+.navbar-brand {
+  font-size: 1.4rem;          // Taille de police légèrement agrandie
+  letter-spacing: -0.5px;     // Espacement légèrement réduit pour un look moderne
+}
+
+// ===== CARTES (CARDS) =====
+
+// Style commun pour toutes les cartes Bootstrap de l'application
+.card {
+  border-radius: 12px;              // Coins arrondis pour un look moderne
+  transition: transform 0.2s ease,  // Animation de translation au survol
+              box-shadow 0.2s ease; // Animation d'ombre au survol
+
+  // Effet de survol sur les cartes : légère élévation
+  &:hover {
+    transform: translateY(-3px);           // Monte de 3px au survol
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;  // Ombre plus prononcée
+  }
+}
+
+// ===== BOUTONS =====
+
+// Boutons avec coins légèrement arrondis et transition fluide
+.btn {
+  border-radius: 8px;               // Coins arrondis sur les boutons
+  font-weight: 500;                 // Texte des boutons légèrement gras
+  transition: all 0.2s ease;       // Transition douce sur toutes les propriétés
+  letter-spacing: 0.3px;           // Espacement des lettres légèrement augmenté
+}
+
+// ===== FORMULAIRES =====
+
+// Style des champs de formulaire (inputs, selects, textareas)
+.form-control {
+  border-radius: 8px;               // Coins arrondis sur les champs
+  border: 2px solid #e2e8f0;       // Bordure légèrement plus visible que Bootstrap par défaut
+  padding: 0.6rem 0.9rem;          // Espacement intérieur confortable
+
+  // Style au focus (quand l'utilisateur clique sur un champ)
+  &:focus {
+    border-color: $eventfreeka-primary;              // Bordure violette au focus
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); // Halo coloré autour du champ
+  }
+}
+
+// ===== HERO SECTION (PAGE D'ACCUEIL) =====
+
+// Style de la section d'accroche de la page d'accueil
+.hero-section {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);  // Dégradé violet
+  border-radius: 16px;   // Grands coins arrondis pour un look moderne
+  padding: 3rem 2rem;    // Espacement intérieur généreux
+}
+
+// ===== BADGES =====
+
+// Style commun pour les badges (étiquettes de statut)
+.badge {
+  font-weight: 500;       // Texte légèrement gras
+  font-size: 0.75rem;     // Taille de police petite mais lisible
+  padding: 0.35em 0.65em; // Espacement intérieur compact
+  border-radius: 6px;     // Coins légèrement arrondis
+}
+
+// ===== ALERTS / NOTIFICATIONS FLASH =====
+
+// Style des notifications flash (succès, erreur)
+.alert {
+  border-radius: 10px;   // Coins arrondis pour les alertes
+  border: none;           // Pas de bordure (l'arrière-plan suffit)
+  font-weight: 500;       // Texte légèrement gras pour meilleure lisibilité
+}
+
+// ===== FOOTER =====
+
+// Style du footer de l'application
+footer {
+  margin-top: auto;       // Pousse le footer vers le bas de la page
+}
+
+// ===== RESPONSIVE =====
+
+// Ajustements pour les très petits écrans (< 576px)
+@media (max-width: 575.98px) {
+  // Réduit les marges sur mobile pour économiser l'espace
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

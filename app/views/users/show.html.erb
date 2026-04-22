@@ -1,0 +1,177 @@
+<%# app/views/users/show.html.erb — Page de profil d'un utilisateur connecté %>
+<%# Accessible uniquement par l'utilisateur lui-même (vérification dans UsersController) %>
+
+<%# ===== EN-TÊTE DU PROFIL ===== %>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body p-4">
+    <div class="row align-items-center">
+
+      <%# Avatar généré automatiquement avec les initiales de l'utilisateur %>
+      <div class="col-auto">
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center
+                    justify-content-center fw-bold"
+             style="width: 80px; height: 80px; font-size: 2rem;">
+          <%# Affiche la première lettre du prénom comme avatar par défaut %>
+          <%= @user.first_name.first.upcase %>
+        </div>
+      </div>
+
+      <%# Informations principales de l'utilisateur %>
+      <div class="col">
+        <%# Nom complet de l'utilisateur via la méthode full_name du modèle User %>
+        <h2 class="fw-bold mb-1"><%= @user.full_name %></h2>
+
+        <%# Adresse email de l'utilisateur %>
+        <p class="text-muted mb-1">✉️ <%= @user.email %></p>
+
+        <%# Description / biographie (affichée seulement si elle existe) %>
+        <% if @user.description.present? %>
+          <p class="mb-0"><%= @user.description %></p>
+        <% else %>
+          <%# Message par défaut si la description n'est pas renseignée %>
+          <p class="text-muted fst-italic mb-0">Aucune description renseignée.</p>
+        <% end %>
+      </div>
+
+      <%# Boutons de modification du profil (visibles uniquement par le propriétaire) %>
+      <% if current_user == @user %>
+        <div class="col-auto">
+          <%# Bouton pour modifier les informations de base du profil (prénom, nom, description) %>
+          <%= link_to "✏️ Modifier mon profil", edit_user_path(@user),
+              class: "btn btn-outline-primary me-2 mb-2" %>
+
+          <%# Bouton pour modifier les identifiants (email et mot de passe via Devise) %>
+          <%= link_to "🔑 Changer mes identifiants", edit_user_registration_path,
+              class: "btn btn-outline-secondary mb-2" %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
+<%# ===== STATISTIQUES RAPIDES ===== %>
+<div class="row g-3 mb-4">
+
+  <%# Carte statistique : nombre d'événements créés %>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="card-body">
+        <%# Nombre d'événements créés par l'utilisateur %>
+        <h3 class="display-6 fw-bold text-primary"><%= @created_events.count %></h3>
+        <p class="text-muted mb-0">Événement(s) créé(s)</p>
+      </div>
+    </div>
+  </div>
+
+  <%# Carte statistique : nombre d'événements auxquels l'utilisateur est inscrit %>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="card-body">
+        <h3 class="display-6 fw-bold text-success"><%= @registered_events.count %></h3>
+        <p class="text-muted mb-0">Événement(s) rejoint(s)</p>
+      </div>
+    </div>
+  </div>
+
+  <%# Carte : date d'inscription sur la plateforme %>
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="card-body">
+        <%# created_at est rempli automatiquement par Rails lors de la création du compte %>
+        <h3 class="display-6 fw-bold text-warning">
+          <%= @user.created_at.strftime("%Y") %>
+        </h3>
+        <p class="text-muted mb-0">Membre depuis</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%# ===== ÉVÉNEMENTS CRÉÉS PAR L'UTILISATEUR ===== %>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">
+    <h4 class="mb-0">🎉 Mes événements créés (<%= @created_events.count %>)</h4>
+  </div>
+
+  <div class="card-body">
+    <% if @created_events.any? %>
+
+      <%# Liste des événements créés par l'utilisateur %>
+      <div class="list-group list-group-flush">
+        <% @created_events.each do |event| %>
+          <div class="list-group-item px-0 d-flex justify-content-between align-items-center">
+
+            <%# Informations de l'événement %>
+            <div>
+              <%# Titre de l'événement cliquable %>
+              <%= link_to event.title, event_path(event), class: "fw-bold text-decoration-none" %>
+              <br>
+              <%# Date et lieu de l'événement %>
+              <small class="text-muted">
+                📅 <%= event.start_date.strftime("%d/%m/%Y") %> —
+                📍 <%= event.location %>
+              </small>
+            </div>
+
+            <%# Badges de statut de l'événement %>
+            <div>
+              <%# Badge "Passé" ou "À venir" selon la date %>
+              <% if event.past? %>
+                <span class="badge bg-secondary me-1">Passé</span>
+              <% else %>
+                <span class="badge bg-success me-1">À venir</span>
+              <% end %>
+
+              <%# Badge du nombre de participants %>
+              <span class="badge bg-primary">
+                👥 <%= event.participants_count %>
+              </span>
+            </div>
+
+          </div>
+        <% end %>
+      </div>
+
+    <% else %>
+      <%# Message si l'utilisateur n'a pas encore créé d'événement %>
+      <div class="text-center py-3">
+        <p class="text-muted">Vous n'avez pas encore créé d'événement.</p>
+        <%= link_to "Créer mon premier événement", new_event_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%# ===== ÉVÉNEMENTS REJOINTS PAR L'UTILISATEUR ===== %>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-success text-white">
+    <h4 class="mb-0">🎟️ Événements que je vais rejoindre (<%= @registered_events.count %>)</h4>
+  </div>
+
+  <div class="card-body">
+    <% if @registered_events.any? %>
+
+      <%# Liste des événements auxquels l'utilisateur est inscrit %>
+      <div class="list-group list-group-flush">
+        <% @registered_events.each do |event| %>
+          <div class="list-group-item px-0">
+            <%# Titre cliquable de l'événement %>
+            <%= link_to event.title, event_path(event), class: "fw-bold text-decoration-none" %>
+            <br>
+            <small class="text-muted">
+              📅 <%= event.start_date.strftime("%d/%m/%Y") %> — 📍 <%= event.location %>
+            </small>
+          </div>
+        <% end %>
+      </div>
+
+    <% else %>
+      <%# Message si l'utilisateur n'est inscrit à aucun événement à venir %>
+      <p class="text-muted text-center py-3">
+        Vous n'êtes inscrit à aucun événement à venir.
+      </p>
+    <% end %>
+  </div>
+</div>

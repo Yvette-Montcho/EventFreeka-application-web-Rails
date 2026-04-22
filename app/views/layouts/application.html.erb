@@ -1,0 +1,168 @@
+<%# app/views/layouts/application.html.erb — Template principal partagé par toutes les vues %>
+<%# Toutes les pages de l'application héritent de ce layout %>
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <%# Encodage de caractères UTF-8 pour supporter les accents et caractères spéciaux %>
+    <meta charset="UTF-8">
+
+    <%# Meta viewport : rend le site responsive (adaptation à la taille de l'écran mobile) %>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <%# Balise CSRF : sécurité contre les attaques de falsification de requêtes inter-sites %>
+    <%= csrf_meta_tags %>
+
+    <%# Politique CSP : contrôle les sources de contenu autorisées pour la sécurité %>
+    <%= csp_meta_tag %>
+
+    <%# Titre de la page affiché dans l'onglet du navigateur %>
+    <title>EventFreeka — Découvrez les événements près de chez vous</title>
+
+    <%# Favicon : icône affichée dans l'onglet du navigateur %>
+    <%= favicon_link_tag 'favicon.ico' %>
+
+    <%# Chargement des styles CSS (Bootstrap inclus via le pipeline d'assets) %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%# Chargement des scripts JavaScript via importmap (Rails 7) %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <%# ===== BARRE DE NAVIGATION ===== %>
+    <%# Navbar Bootstrap fixée en haut de page, présente sur toutes les vues %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+      <div class="container">
+
+        <%# Logo / Nom de l'application — cliquable, renvoie vers la page d'accueil %>
+        <%= link_to "🎉 EventFreeka", root_path, class: "navbar-brand fw-bold" %>
+
+        <%# Bouton hamburger pour les petits écrans (menu collapse sur mobile) %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <%# Contenu du menu — se replie sur mobile %>
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+          <%# Liens de navigation principaux (alignés à gauche) %>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <%# Lien vers la page d'accueil (liste des événements) %>
+            <li class="nav-item">
+              <%= link_to "🏠 Accueil", root_path, class: "nav-link" %>
+            </li>
+
+            <%# Lien vers la création d'événement — visible uniquement si connecté %>
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <%= link_to "➕ Créer un événement", new_event_path, class: "nav-link" %>
+              </li>
+            <% end %>
+
+          </ul>
+
+          <%# Liens de profil (alignés à droite) %>
+          <ul class="navbar-nav ms-auto">
+
+            <% if user_signed_in? %>
+              <%# Dropdown "Mon profil" visible uniquement pour les utilisateurs connectés %>
+              <li class="nav-item dropdown">
+                <%# Bouton du dropdown affichant le prénom de l'utilisateur connecté %>
+                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  👤 <%= current_user.first_name %>
+                </a>
+
+                <%# Menu déroulant du profil %>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                  <%# Lien vers la page de profil de l'utilisateur connecté %>
+                  <li>
+                    <%= link_to "Mon profil", user_path(current_user), class: "dropdown-item" %>
+                  </li>
+
+                  <%# Lien vers la modification des identifiants (email/mot de passe via Devise) %>
+                  <li>
+                    <%= link_to "Modifier mes identifiants", edit_user_registration_path, class: "dropdown-item" %>
+                  </li>
+
+                  <%# Séparateur visuel dans le dropdown %>
+                  <li><hr class="dropdown-divider"></li>
+
+                  <%# Lien de déconnexion — utilise la méthode HTTP DELETE (destroy session Devise) %>
+                  <li>
+                    <%= link_to "Se déconnecter", destroy_user_session_path,
+                        data: { turbo_method: :delete }, class: "dropdown-item text-danger" %>
+                  </li>
+                </ul>
+              </li>
+
+            <% else %>
+              <%# Dropdown "S'inscrire / Se connecter" pour les visiteurs non connectés %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="authDropdown"
+                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  🔐 Connexion
+                </a>
+
+                <%# Menu déroulant avec les liens d'inscription et de connexion %>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
+                  <%# Lien vers la page d'inscription (registrations#new de Devise) %>
+                  <li>
+                    <%= link_to "S'inscrire", new_user_registration_path, class: "dropdown-item" %>
+                  </li>
+
+                  <%# Lien vers la page de connexion (sessions#new de Devise) %>
+                  <li>
+                    <%= link_to "Se connecter", new_user_session_path, class: "dropdown-item" %>
+                  </li>
+                </ul>
+              </li>
+            <% end %>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <%# ===== NOTIFICATIONS FLASH ===== %>
+    <%# Les messages flash sont des notifications temporaires affichées une seule fois %>
+    <div class="container mt-3">
+
+      <%# Message de succès (notice) — fond vert %>
+      <% if notice %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <%# Bouton pour fermer manuellement la notification %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+
+      <%# Message d'erreur (alert) — fond rouge %>
+      <% if alert %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+
+    </div>
+
+    <%# ===== CONTENU PRINCIPAL ===== %>
+    <%# yield insère ici le contenu spécifique à chaque vue %>
+    <main class="container my-4">
+      <%= yield %>
+    </main>
+
+    <%# ===== FOOTER ===== %>
+    <footer class="bg-dark text-light text-center py-3 mt-5">
+      <div class="container">
+        <%# Copyright et nom de l'application %>
+        <small>&copy; <%= Time.now.year %> EventFreeka — Tous droits réservés</small>
+      </div>
+    </footer>
+
+  </body>
+</html>

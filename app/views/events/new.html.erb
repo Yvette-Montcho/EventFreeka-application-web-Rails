@@ -1,0 +1,140 @@
+<%# app/views/events/new.html.erb — Formulaire de création d'un nouvel événement %>
+
+<%# Titre de la page %>
+<h1 class="fw-bold mb-4">➕ Créer un événement</h1>
+
+<%# Conteneur centré pour le formulaire %>
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+
+        <%# form_with génère un formulaire HTML lié au modèle @event %>
+        <%# model: @event => Rails génère automatiquement l'URL et la méthode HTTP %>
+        <%# local: true => désactive le comportement AJAX (formulaire HTML classique) %>
+        <%= form_with model: @event, local: true do |f| %>
+
+          <%# Affichage des erreurs de validation si le formulaire a été soumis avec des erreurs %>
+          <% if @event.errors.any? %>
+            <div class="alert alert-danger">
+              <%# Titre du bloc d'erreurs avec le nombre d'erreurs détectées %>
+              <h5>⚠️ <%= pluralize(@event.errors.count, "erreur") %> trouvée(s) :</h5>
+              <ul class="mb-0">
+                <%# Affiche chaque message d'erreur de validation %>
+                <% @event.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <%# ===== CHAMP : TITRE ===== %>
+          <div class="mb-3">
+            <%# Label associé au champ pour l'accessibilité %>
+            <%= f.label :title, "Titre de l'événement", class: "form-label fw-bold" %>
+
+            <%# Champ texte pour le titre — class Bootstrap pour le style %>
+            <%= f.text_field :title,
+                class: "form-control #{'is-invalid' if @event.errors[:title].any?}",
+                placeholder: "Ex: Concert de Jazz au Parc",
+                autofocus: true %>
+
+            <%# Affiche le message d'erreur spécifique au titre si présent %>
+            <% if @event.errors[:title].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:title].first %></div>
+            <% end %>
+          </div>
+
+          <%# ===== CHAMP : DESCRIPTION ===== %>
+          <div class="mb-3">
+            <%= f.label :description, "Description", class: "form-label fw-bold" %>
+
+            <%# Zone de texte multiligne pour la description de l'événement %>
+            <%= f.text_area :description,
+                class: "form-control #{'is-invalid' if @event.errors[:description].any?}",
+                rows: 5,
+                placeholder: "Décrivez votre événement : programme, intervenants, public cible..." %>
+
+            <% if @event.errors[:description].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:description].first %></div>
+            <% end %>
+          </div>
+
+          <%# ===== RANGÉE : DATE ET DURÉE (côte à côte) ===== %>
+          <div class="row mb-3">
+
+            <%# Champ date et heure de début de l'événement %>
+            <div class="col-md-6">
+              <%= f.label :start_date, "Date et heure de début", class: "form-label fw-bold" %>
+
+              <%# datetime-local : sélecteur de date ET d'heure natif du navigateur %>
+              <%= f.datetime_local_field :start_date,
+                  class: "form-control #{'is-invalid' if @event.errors[:start_date].any?}" %>
+
+              <% if @event.errors[:start_date].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:start_date].first %></div>
+              <% end %>
+            </div>
+
+            <%# Champ durée de l'événement en heures %>
+            <div class="col-md-6">
+              <%= f.label :duration, "Durée (en heures)", class: "form-label fw-bold" %>
+
+              <%# Champ numérique — min: 0.5 pour éviter une durée de 0 %>
+              <%= f.number_field :duration,
+                  class: "form-control #{'is-invalid' if @event.errors[:duration].any?}",
+                  min: 0.5, step: 0.5, placeholder: "Ex: 2" %>
+
+              <% if @event.errors[:duration].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:duration].first %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# ===== CHAMP : LIEU ===== %>
+          <div class="mb-3">
+            <%= f.label :location, "Lieu", class: "form-label fw-bold" %>
+
+            <%# Champ texte pour l'adresse ou le nom du lieu %>
+            <%= f.text_field :location,
+                class: "form-control #{'is-invalid' if @event.errors[:location].any?}",
+                placeholder: "Ex: Parc de la Paix, Dakar" %>
+
+            <% if @event.errors[:location].any? %>
+              <div class="invalid-feedback"><%= @event.errors[:location].first %></div>
+            <% end %>
+          </div>
+
+          <%# ===== CHAMP : PRIX ===== %>
+          <div class="mb-4">
+            <%= f.label :price, "Prix (en euros, 0 = gratuit)", class: "form-label fw-bold" %>
+
+            <%# Groupe d'input avec le symbole € à gauche %>
+            <div class="input-group">
+              <span class="input-group-text">€</span>
+
+              <%# Champ numérique pour le prix — min: 0 car le prix ne peut pas être négatif %>
+              <%= f.number_field :price,
+                  class: "form-control #{'is-invalid' if @event.errors[:price].any?}",
+                  min: 0, step: 0.01, placeholder: "0.00" %>
+
+              <% if @event.errors[:price].any? %>
+                <div class="invalid-feedback"><%= @event.errors[:price].first %></div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# ===== BOUTONS D'ACTION ===== %>
+          <div class="d-flex justify-content-between">
+            <%# Bouton d'annulation : retour à la liste des événements sans sauvegarder %>
+            <%= link_to "Annuler", root_path, class: "btn btn-outline-secondary" %>
+
+            <%# Bouton de soumission du formulaire %>
+            <%= f.submit "🎉 Créer l'événement", class: "btn btn-primary px-4" %>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
